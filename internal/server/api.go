@@ -3,8 +3,10 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/d2r2/go-dht"
 	"github.com/gorilla/mux"
 	types "github.com/jsubirat/gardener/internal/types"
 )
@@ -34,11 +36,19 @@ func (a *api) Router() http.Handler {
 func (a *api) fetchSensors(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Called to get sensors\n")
 
+	temperature, humidity, retried, err :=
+		dht.ReadDHTxxWithRetry(dht.DHT11, 4, false, 10)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Print temperature and humidity
+	fmt.Printf("Temperature = %v*C, Humidity = %v%% (retried %d times)\n", temperature, humidity, retried)
+
 	measurement := &types.Measurement{}
 	measurement.Measurement = "sensor-dht22"
 	fields := &types.Fields{}
-	fields.Temperature = 32.0
-	fields.Humidity = 75.0
+	fields.Temperature = temperature
+	fields.Humidity = humidity
 	measurement.Fields = fields
 
 	w.Header().Set("Content-Type", "application/json")

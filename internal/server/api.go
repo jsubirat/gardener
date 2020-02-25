@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/jsubirat/gardener/internal/types/measure"
-
 	"github.com/gorilla/mux"
+	types "github.com/jsubirat/gardener/internal/types"
 )
 
 type api struct {
@@ -35,13 +34,13 @@ func (a *api) Router() http.Handler {
 func (a *api) fetchSensors(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Called to get sensors\n")
 
-	measurements := &measure.Measurement{}
-	measurements.measurement = "temperature"
-	fields := &measure.Fields{}
-	fields.temperature = 32.0
-	fields.humidity = 75.0
-	measurements.fields = fields
+	measurement := &types.Measurement{}
+	measurement.Measurement = "sensor-dht22"
+	fields := &types.Fields{}
+	fields.Temperature = 32.0
+	fields.Humidity = 75.0
+	measurement.Fields = fields
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(measurements)
+	json.NewEncoder(w).Encode(measurement)
 }

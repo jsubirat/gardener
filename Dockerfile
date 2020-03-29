@@ -1,11 +1,23 @@
-FROM balenalib/raspberrypi3-alpine-golang:latest
+FROM balenalib/raspberry-pi-alpine-python:3-latest
 
-RUN install_packages libc-dev
+RUN install_packages gcc python3-dev musl-dev
 
-WORKDIR /go/src/app
-COPY . .
+RUN pip3 install RPI.GPIO adafruit-blinka adafruit-circuitpython-mcp3xxx
 
-RUN go get -d -v ./...
-RUN go install -v ./...
+WORKDIR /app
+COPY voltage.py .
 
-CMD ["gardener"]
+CMD ["watch", "python3", "voltage.py"]
+
+
+# FROM balenalib/raspberrypi3-alpine-golang:latest
+
+# RUN install_packages libc-dev
+
+# WORKDIR /go/src/app
+# COPY . .
+
+# RUN go get -d -v ./...
+# RUN go install -v ./...
+
+# CMD ["gardener"]
